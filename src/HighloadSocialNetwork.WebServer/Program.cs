@@ -1,62 +1,12 @@
-using System.Text;
-using Dapper;
 using FluentMigrator.Runner;
-using HighloadSocialNetwork.WebServer.DataAccess;
-using HighloadSocialNetwork.WebServer.DataAccess.Interfaces;
-using HighloadSocialNetwork.WebServer.DataAccess.Repositories;
-using HighloadSocialNetwork.WebServer.Services;
-using HighloadSocialNetwork.WebServer.Services.Interfaces;
-using HighloadSocialNetwork.WebServer.Utils;
+using HighloadSocialNetwork.WebServer.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using Scalar.AspNetCore;
-
-var connectionsString = Environment.GetEnvironmentVariable("ConnectionStrings__DbUri")!;
-var masterConnectionsString = Environment.GetEnvironmentVariable("ConnectionStrings__MasterDbUri")!;
-var jwtKey = Environment.GetEnvironmentVariable("Auth__Jwt_SecretKey")!;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DefaultTypeMap.MatchNamesWithUnderscores = true;
-EnsureDatabase(connectionsString, masterConnectionsString);
-builder.Services.AddFluentMigratorCore()
-    .ConfigureRunner(c =>
-    {
-        c.AddPostgres15_0()
-            .WithGlobalConnectionString(connectionsString)
-            .ScanIn(typeof(Program).Assembly);
-    })
-    .AddLogging(lb => lb.AddFluentMigratorConsole());
-
-builder.Services.AddSingleton<IDataSourceHolder, DataSourceHolder>()
-    .AddSingleton<IDatabaseFactory, DatabaseFactory>()
-    .AddTransient(sp => sp.GetRequiredService<IDatabaseFactory>().Create(connectionsString));
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new()
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
-    });
-
-builder.Services.AddSingleton<IAuthRepository, AuthRepository>();
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-
-builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddSingleton<IUserService, UserService>();
-
-builder.Services.AddControllers();
-builder.Services.AddOpenApi("v1", options =>
-{
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-});
+builder.Services.SetupServerServices()
+    .AddServices();
 
 var app = builder.Build();
 
@@ -93,21 +43,4 @@ void UpdateDatabase(IServiceProvider serviceProvider)
 {
     var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
     runner.MigrateUp();
-}
-
-void EnsureDatabase(string connectionString, string? masterConnectionString)
-{
-    if (!string.IsNullOrWhiteSpace(masterConnectionString))
-    {
-        using var dbConnection = new NpgsqlConnection(connectionString);
-        using var masterConnection = new NpgsqlConnection(masterConnectionString);
-
-        var dbName = dbConnection.Database;
-        var result = masterConnection.ExecuteScalar<int>($"SELECT count(*) FROM pg_database WHERE datname = '{dbName}';");
-
-        if (result == 0)
-        {
-            masterConnection.Execute($"CREATE DATABASE {dbName};");
-        }
-    }
 }
