@@ -5,7 +5,33 @@ services:
       context: ../
       dockerfile: HighloadSocialNetwork.WebServer/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=80
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 80
+      ConnectionStrings__DbUri: User Id=postgres;Password=1;Server=postgres;Port=5432;Database=highloadsocialnetwork_db;Pooling=true;Minimum Pool Size=1;Maximum Pool Size=5;SSL Mode=Allow;Include Error Detail=true
+      ConnectionStrings__MasterDbUri: User Id=postgres;Password=1;Server=postgres;Port=5432;Database=postgres;Pooling=true;Minimum Pool Size=1;Maximum Pool Size=5;SSL Mode=Allow;Include Error Detail=true
     ports:
       - 5000:80
+    depends_on:
+      - postgres
+    networks:
+      - hl-sn
+  
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "1"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - 15432:5432
+    networks:
+      - hl-sn
+
+networks:
+  hl-sn:
+    name: hl-sn-network
+    external: false
+    driver: bridge

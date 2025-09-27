@@ -4,6 +4,6 @@ public record RegisterRequest(
     string FirstName, 
     string SecondName,
     DateTime Birthdate,
-    string Biography,
+    string? Biography,
     string City,
     string Password);

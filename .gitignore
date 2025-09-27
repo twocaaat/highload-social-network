@@ -260,3 +260,5 @@ paket-files/
 **/Scripts/build/
 
 *.rsa
+
+postgres-data/
