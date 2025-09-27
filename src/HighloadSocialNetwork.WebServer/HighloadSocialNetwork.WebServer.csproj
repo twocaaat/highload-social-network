@@ -15,6 +15,7 @@
       <PackageReference Include="FluentMigrator.Extensions.Postgres" Version="7.1.0" />
       <PackageReference Include="FluentMigrator.Runner" Version="7.1.0" />
       <PackageReference Include="FluentMigrator.Runner.Postgres" Version="7.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
       <PackageReference Include="Npgsql" Version="9.0.3" />
       <PackageReference Include="Riok.Mapperly" Version="4.2.1" />

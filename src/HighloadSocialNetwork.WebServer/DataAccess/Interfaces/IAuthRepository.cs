@@ -5,4 +5,5 @@ namespace HighloadSocialNetwork.WebServer.DataAccess.Interfaces;
 public interface IAuthRepository
 {
     Task CreateUser(UserInDb user, UserLoginInDb userLogin);
+    Task<UserLoginInDb?> GetById(Guid id);
 }

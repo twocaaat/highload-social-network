@@ -3,7 +3,7 @@ using System.Text;
 
 namespace HighloadSocialNetwork.WebServer.Utils;
 
-public class PasswordHasher
+public static class PasswordHasher
 {
     public static string MakeHash(string password)
     {
@@ -11,5 +11,11 @@ public class PasswordHasher
         var bytes = Encoding.UTF8.GetBytes(password);
         var hash = sha256.ComputeHash(bytes);
         return Convert.ToBase64String(hash);
+    }
+
+    public static bool Verify(string password, string hash)
+    {
+        var passwordHash = MakeHash(password);
+        return passwordHash == hash;
     }
 }

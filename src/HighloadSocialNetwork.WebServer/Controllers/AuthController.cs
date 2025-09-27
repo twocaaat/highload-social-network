@@ -1,7 +1,7 @@
 ﻿using HighloadSocialNetwork.WebServer.ApiContracts.Auth;
+using HighloadSocialNetwork.WebServer.Exceptions;
 using HighloadSocialNetwork.WebServer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Scalar.AspNetCore;
 
 namespace HighloadSocialNetwork.WebServer.Controllers;
 
@@ -14,8 +14,19 @@ public class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public Task<IActionResult> Login([FromBody] LoginRequest request) => throw new NotImplementedException();
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        try
+        {
+            var token = await authService.Login(request);
+            return Ok(new LoginResponse(token));
+        }
+        catch (LoginException)
+        {
+            return Unauthorized();
+        }
+    }
 
     [HttpPost("user/register")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegisterResponse))]

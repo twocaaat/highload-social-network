@@ -1,17 +1,33 @@
 ﻿using HighloadSocialNetwork.WebServer.ApiContracts.User;
+using HighloadSocialNetwork.WebServer.DataAccess.Models;
+using HighloadSocialNetwork.WebServer.Exceptions;
+using HighloadSocialNetwork.WebServer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HighloadSocialNetwork.WebServer.Controllers;
 
 [ApiController]
 [Route("api/v1/user")]
+[Authorize]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
     [HttpGet("get/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public Task<IActionResult> Login([FromRoute] Guid userId) => throw new NotImplementedException();
+    public async Task<IActionResult> Login([FromRoute] Guid userId)
+    {
+        try
+        {
+            var user = await userService.GetUserById(userId);
+            return Ok(user);
+        }
+        catch (EntityNotFoundException<UserInDb>)
+        {
+            return NotFound($"User {userId} not found.");
+        }
+    }
 }

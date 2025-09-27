@@ -1,10 +1,8 @@
 ﻿namespace HighloadSocialNetwork.WebServer.Exceptions;
 
-internal class RollbackException : Exception
-{
-}
+public class RollbackException : Exception;
 
-internal class RollbackException<T> : RollbackException
+public class RollbackException<T> : RollbackException
 {
     public T? Result { get; init; }
 }
