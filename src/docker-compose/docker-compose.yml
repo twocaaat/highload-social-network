@@ -1,0 +1,11 @@
+services:
+  highloadsocialnetwork.webserver:
+    image: ${DOCKER_REGISTRY-}highloadsocialnetworkwebserver
+    build:
+      context: ../
+      dockerfile: HighloadSocialNetwork.WebServer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+    ports:
+      - 5000:80

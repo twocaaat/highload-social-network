@@ -1,5 +1,6 @@
 ﻿using HighloadSocialNetwork.WebServer.ApiContracts.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Scalar.AspNetCore;
 
 namespace HighloadSocialNetwork.WebServer.Controllers;
 
