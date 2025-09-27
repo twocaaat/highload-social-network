@@ -1,3 +1,3 @@
 ﻿namespace HighloadSocialNetwork.WebServer.ApiContracts.Auth;
 
-public record LoginResponse();
+public record LoginRequest(Guid Id, string Password);

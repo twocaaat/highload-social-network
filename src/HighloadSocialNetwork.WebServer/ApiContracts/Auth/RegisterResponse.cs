@@ -1,3 +1,3 @@
 ﻿namespace HighloadSocialNetwork.WebServer.ApiContracts.Auth;
 
-public record LoginRequest();
+public record RegisterResponse(Guid UserId);

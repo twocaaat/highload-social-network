@@ -1,6 +1,3 @@
 ﻿namespace HighloadSocialNetwork.WebServer.ApiContracts.User;
 
-public class UserResponse
-{
-    
-}
+public record UserResponse();

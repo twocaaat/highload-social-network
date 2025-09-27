@@ -1,3 +1,3 @@
 ﻿namespace HighloadSocialNetwork.WebServer.ApiContracts.Auth;
 
-public record RegisterResponse();
+public record LoginResponse(string Token);
