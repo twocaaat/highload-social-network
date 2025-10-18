@@ -12,6 +12,12 @@ public class PostgresDb(NpgsqlDataSource dataSource) : IDatabase
         await using var connection = await dataSource.OpenConnectionAsync();
         return await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
     }
+    
+    public async Task<List<T>> GetList<T>(string sql, object? parameters = null)
+    {
+        await using var connection = await dataSource.OpenConnectionAsync();
+        return (await connection.QueryAsync<T>(sql, parameters)).ToList();
+    }
 
     public async Task<int> Execute(string sql, object? parameters = null)
     {

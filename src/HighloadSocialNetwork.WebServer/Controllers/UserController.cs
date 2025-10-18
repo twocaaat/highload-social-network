@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HighloadSocialNetwork.WebServer.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/user")]
-[Authorize]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
@@ -18,7 +18,7 @@ public class UserController(IUserService userService) : ControllerBase
     [HttpGet("get/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Login([FromRoute] Guid userId)
+    public async Task<IActionResult> GetById([FromRoute] Guid userId)
     {
         try
         {
@@ -30,4 +30,9 @@ public class UserController(IUserService userService) : ControllerBase
             return NotFound($"User {userId} not found.");
         }
     }
+
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
+    public async Task<IActionResult> Search([FromQuery] string firstName, [FromQuery] string lastName) =>
+        Ok(await userService.Search(firstName, lastName));
 }

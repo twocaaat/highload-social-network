@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace HighloadSocialNetwork.WebServer.DataAccess;
 
-public class PostgresTransactionDb : IDatabaseTransaction
+public sealed class PostgresTransactionDb : IDatabaseTransaction
 {
     private bool _disposed;
 
@@ -21,6 +21,9 @@ public class PostgresTransactionDb : IDatabaseTransaction
     public async Task<T?> GetOrDefault<T>(string sql, object? parameters = null) =>
         await _connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
 
+    public async Task<List<T>> GetList<T>(string sql, object? parameters = null) =>
+        (await _connection.QueryAsync<T>(sql, parameters)).ToList();
+
     public async Task<int> Execute(string sql, object? parameters = null) =>
         await _connection.ExecuteAsync(sql, parameters);
     
@@ -34,8 +37,8 @@ public class PostgresTransactionDb : IDatabaseTransaction
     internal Task CommitInnerTransaction() => _transaction.CommitAsync();
     
     internal Task RollbackInnerTransaction() => _transaction.RollbackAsync();
-    
-    protected virtual async ValueTask DisposeAsync(bool disposing)
+
+    private async ValueTask DisposeAsync(bool disposing)
     {
         if (!_disposed)
         {

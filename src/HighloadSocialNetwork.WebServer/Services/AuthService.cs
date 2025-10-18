@@ -5,31 +5,28 @@ using HighloadSocialNetwork.WebServer.ApiContracts.Auth;
 using HighloadSocialNetwork.WebServer.DataAccess.Interfaces;
 using HighloadSocialNetwork.WebServer.DataAccess.Models;
 using HighloadSocialNetwork.WebServer.Exceptions;
-using HighloadSocialNetwork.WebServer.Mappers.ApiContracts;
+using HighloadSocialNetwork.WebServer.Mappers.Interafaces;
 using HighloadSocialNetwork.WebServer.Services.Interfaces;
 using HighloadSocialNetwork.WebServer.Utils;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HighloadSocialNetwork.WebServer.Services;
 
-public class AuthService(IAuthRepository repository) : IAuthService
+public class AuthService(IAuthRepository repository, IModelsMapper modelsMapper) : IAuthService
 {
     private readonly JwtSecurityTokenHandler _tokenHandler = new();
     
     public async Task<Guid> CreateUser(RegisterRequest request)
     {
-        var mapper = new RegisterRequestMapper();
-        var userId = Guid.NewGuid();
-        
-        var userInDb = mapper.ToUserInDb(request, userId);
+        var userInDb = modelsMapper.ToUserInDb(request);
         var userLoginInDb = new UserLoginInDb
         {
-            Id = userId,
+            Id = userInDb.Id,
             Password = PasswordHasher.MakeHash(request.Password)
         };
         
         await repository.CreateUser(userInDb, userLoginInDb);
-        return userId;
+        return userInDb.Id;
     }
 
     public async Task<string> Login(LoginRequest request)
