@@ -11,6 +11,7 @@ namespace HighloadSocialNetwork.WebServer.Controllers;
 [ApiController]
 [Route("api/v1/user")]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
 public class UserController(IUserService userService) : ControllerBase

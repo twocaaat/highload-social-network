@@ -1,0 +1,15 @@
+{
+  "name": "k6perf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "twocaaat",
+  "license": "ISC",
+  "description": "Performance tests on k6",
+  "devDependencies": {
+    "@types/k6": "^1.3.1"
+  }
+}
